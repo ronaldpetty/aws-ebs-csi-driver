@@ -30,8 +30,8 @@ There are several optional parameters that could be passed into `CreateVolumeReq
 | "csi.storage.k8s.io/fstype" | xfs, ext2, ext3, ext4                  | ext4     | File system type that will be formatted during volume creation. This parameter is case sensitive! |
 | "type"                      | io1, io2, gp2, gp3, sc1, st1,standard  | gp3*     | EBS volume type     |
 | "iopsPerGB"                 |                                        |          | I/O operations per second per GiB. Required when io1 or io2 volume type is specified. If this value multiplied by the size of a requested volume produces a value above the maximum IOPs allowed for the volume type, as documented [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html), AWS will cap the IOPS to maximum supported value. If the value is lower than minimal supported IOPS value per volume, either error is returned (the default behavior) or the value is increased to fit into the supported range when `allowautoiopspergbincrease` is `"true"`.|
-| "allowAutoIOPSPerGBIncrease"| true, false                            | false    | When `"true"`, the CSI driver increases IOPS for a volume when `iopsPerGB * <volume size>` is too low to fit into IOPS range supported by AWS. This allows dynamic provisioning to always succeed, even when user specifies too small PVC capacity or `iopsPerGB` value. On the other hand, it may introduce additional costs, as such volumes have higher IOPS than requested in `iopsPerGB`.|
-| "iops"                      |                                        | 3000     | I/O operations per second. Only effetive when gp3 volume type is specified. If empty, it will set to 3000 as documented [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html). |
+| "allowAutoIOPSPerGBIncrease"| true, false                            | false    | When `"true"`, the CSI driver increases IOPS for a volume when `iopsPerGB * <volume size>` is too low to fit into IOPS range supported by AWS. This allows dynamic provisioning to always succeed, even when user specifies to small PVC capacity or `iopsPerGB` value. On the other hand, it may introduce additional costs, as such volumes have higher IOPS than requested in `iopsPerGB`.|
+| "iops"                      |                                        | 3000     | I/O operations per second. Only effective when gp3 volume type is specified. If empty, it will set to 3000 as documented [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html). |
 | "throughput"                |                                        | 125      | Throughput in MiB/s. Only effective when gp3 volume type is specified. If empty, it will set to 125MiB/s as documented [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html). |
 | "encrypted"                 |                                        |          | Whether the volume should be encrypted or not. Valid values are "true" or "false" |
 | "kmsKeyId"                  |                                        |          | The full ARN of the key to use when encrypting the volume. When not specified, the default KMS key is used |
@@ -79,7 +79,7 @@ Following sections are Kubernetes specific. If you are Kubernetes user, use foll
 | v0.2.0                                 | no    | yes   | yes   | no    | no    | no    | no    |
 | v0.1.0                                 | yes   | yes   | yes   | no    | no    | no    | no    |
 
-**Note**: for the entry with `+` sign, it means the driver's default released manifest doesn't work with corresponding Kubernetes version, but the driver container image is compatiable with the Kubernetes version if an older version's manifest is used.
+**Note**: for the entry with `+` sign, it means the driver's default released manifest doesn't work with corresponding Kubernetes version, but the driver container image is compatible with the Kubernetes version if an older version's manifest is used.
 
 ## Container Images:
 |AWS EBS CSI Driver Version | GCR Image                                        | ECR Image                                                                   |
@@ -114,7 +114,7 @@ Following sections are Kubernetes specific. If you are Kubernetes user, use foll
 
 ## Features
 * **Static Provisioning** - create a new or migrating existing EBS volumes, then create persistence volume (PV) from the EBS volume and consume the PV from container using persistence volume claim (PVC).
-* **Dynamic Provisioning** - uses persistence volume claim (PVC) to request the Kuberenetes to create the EBS volume on behalf of user and consumes the volume from inside container. Storage class's **allowedTopologies** could be used to restrict which AZ the volume should be provisioned in. The topology key should be **topology.ebs.csi.aws.com/zone**.
+* **Dynamic Provisioning** - uses persistence volume claim (PVC) to request the Kubernetes to create the EBS volume on behalf of user and consumes the volume from inside container. Storage class's **allowedTopologies** could be used to restrict which AZ the volume should be provisioned in. The topology key should be **topology.ebs.csi.aws.com/zone**.
 * **Mount Option** - mount options could be specified in persistence volume (PV) to define how the volume should be mounted.
 * **NVMe** - consume NVMe EBS volume from EC2 [Nitro instance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html#ec2-nitro-instances).
 * **[Block Volume](https://kubernetes-csi.github.io/docs/raw-block.html)** - consumes the EBS volume as a raw block device for latency sensitive application eg. MySql. The corresponding CSI feature (`CSIBlockVolume`) is GA since Kubernetes 1.18.
@@ -175,7 +175,7 @@ helm upgrade --install aws-ebs-csi-driver \
 ##### Upgrading from version 1.X to 2.X of the helm chart
 Version 2.0.0 remove support for helm v2 and now requires helm v3 or above
 
-The [CSI Snapshotter](https://github.com/kubernetes-csi/external-snapshotter) controller and CRDs will no longer be installed as part of this chart and moving forward will be a prerequisite of using the snap shotting functionality.
+The [CSI Snapshotter](https://github.com/kubernetes-csi/external-snapshotter) controller and CRDs will no longer be installed as part of this chart and moving forward will be a prerequisite of using the snap shooting functionality.
 
 The following deprecated values have been removed, and you should now use their counterparts under the `controller` and `node` maps which have been available since chart version 1.1.0
 * affinity
